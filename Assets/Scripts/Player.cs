@@ -20,11 +20,13 @@ public class Player : MonoBehaviour
     [SerializeField]
     private int hp;
     public int HP { get { return hp; } set { hp = value; } }
-	// Start is called once before the first execution of Update after the MonoBehaviour is created
+	private Quaternion initialRotation;
+
 	void Start()
-    {
-        moveAction = InputSystem.actions.FindAction("Move");
-        rb = GetComponent<Rigidbody> ();
+	{
+		moveAction = InputSystem.actions.FindAction("Move");
+		rb = GetComponent<Rigidbody>();
+		initialRotation = transform.rotation; // remember the correct starting orientation
 	}
 
 	// Update is called once per frame
@@ -37,5 +39,15 @@ public class Player : MonoBehaviour
 	{
 		moveValue = moveAction.ReadValue<Vector2>();
 		rb.AddForce(moveValue.x*Vector3.right * forcePower);
+	}
+	public void ResetPositionX()
+	{
+		Vector3 pos = transform.position;
+		pos.x = 0f;
+		transform.position = pos;
+
+		rb.rotation = initialRotation; // snap back to correct orientation
+		rb.linearVelocity = Vector3.zero;
+		rb.angularVelocity = Vector3.zero;
 	}
 }
